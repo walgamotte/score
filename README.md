@@ -36,7 +36,7 @@ You do not need Android Studio or any coding tools to install this app. Just fol
 ### Steps to Run:
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com
+   git clone https://github.com/walgamotte/discgolfscorecard
    ```
 2. **Open in Android Studio**: Launch Android Studio, select **Open**, and navigate to the cloned folder.
 3. **Enable USB Debugging**: On your phone, go to *Settings > About Phone* and tap *Build Number* 7 times. Go back to *Developer Options* and turn on *USB Debugging*.
