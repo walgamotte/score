@@ -18,17 +18,16 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Dynamically Locate or Generate Gradle Wrapper
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.4' # Uses a pre-installed cloud compiler instead of your missing file
+
+    - name: Compile Standalone APK
       run: |
-        # Check if project files are inside a nested subdirectory
-        if [ -f "DiscGolfScorer/gradlew" ]; then
-          cd DiscGolfScorer
-        elif [ -f "app/build.gradle" ] || [ -f "app/build.gradle.kts" ]; then
-          echo "Root folder contains app modules but missing gradlew wrapper. Generating runner..."
-          gradle wrapper
-        fi
-        chmod +x gradlew
-        ./gradlew assembleDebug --no-daemon
+        # If your project is nested in a folder, it automatically enters it
+        if [ -d "DiscGolfScorer" ]; then cd DiscGolfScorer; fi
+        gradle assembleDebug --no-daemon
 
     - name: Upload Finished APK File
       uses: actions/upload-artifact@v4
@@ -37,4 +36,3 @@ jobs:
         path: |
           **/build/outputs/apk/debug/app-debug.apk
           **/build/outputs/apk/debug/*.apk
-          
