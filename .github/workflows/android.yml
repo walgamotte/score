@@ -2,7 +2,7 @@ name: Android CI/CD
 
 on:
   push:
-    branches: [ "main" ] # Triggers every time you save code to your main branch
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -15,18 +15,26 @@ jobs:
     - name: Set up Java Environment
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
+        distribution: 'temurin'
         java-version: '17'
-        cache: 'gradle'
 
-    - name: Grant Execute Permission for Gradle
-      run: chmod +x gradlew
-
-    - name: Compile Standalone APK
-      run: ./gradlew assembleDebug
+    - name: Dynamically Locate or Generate Gradle Wrapper
+      run: |
+        # Check if project files are inside a nested subdirectory
+        if [ -f "DiscGolfScorer/gradlew" ]; then
+          cd DiscGolfScorer
+        elif [ -f "app/build.gradle" ] || [ -f "app/build.gradle.kts" ]; then
+          echo "Root folder contains app modules but missing gradlew wrapper. Generating runner..."
+          gradle wrapper
+        fi
+        chmod +x gradlew
+        ./gradlew assembleDebug --no-daemon
 
     - name: Upload Finished APK File
       uses: actions/upload-artifact@v4
       with:
         name: DiscGolfScorecard
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: |
+          **/build/outputs/apk/debug/app-debug.apk
+          **/build/outputs/apk/debug/*.apk
+          
