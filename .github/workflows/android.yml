@@ -1,0 +1,38 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Set up Java Environment
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        gradle-version: '8.4' # Uses a pre-installed cloud compiler instead of your missing file
+
+    - name: Compile Standalone APK
+      run: |
+        # If your project is nested in a folder, it automatically enters it
+        if [ -d "DiscGolfScorer" ]; then cd DiscGolfScorer; fi
+        gradle assembleDebug --no-daemon
+
+    - name: Upload Finished APK File
+      uses: actions/upload-artifact@v4
+      with:
+        name: DiscGolfScorecard
+        path: |
+          **/build/outputs/apk/debug/app-debug.apk
+          **/build/outputs/apk/debug/*.apk
